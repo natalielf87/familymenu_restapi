@@ -1,4 +1,26 @@
 
 GET http://localhost:8090/api/v1/dishes/all
 
-##
+###
+
+GET http://localhost:8090/api/v1/dishes?name=Soup
+
+###
+
+GET http://localhost:8090/api/v1/dishes/50
+Accept: application/json
+
+###
+
+POST http://localhost:8090/api/v1/dishes
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Backed potato with chicken",
+    "type": 2,
+    "isActual": true
+}
+
+###
+DELETE http://localhost:8090/api/v1/dishes/18

@@ -3,8 +3,10 @@ package  org.petprojec.familymenu_restapi.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.petprojec.familymenu_restapi.dto.DishDTO;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.repositories.DishesRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -22,21 +24,33 @@ public class DishesService {
         return dishesRepository.findAll();
     }
 
+    public Optional<Dish> findById(long id) {
+        return dishesRepository.findById(id);
+    }
+
     public List<Dish> findByNameStartingWith(String name) {
         return dishesRepository.findByNameStartingWith(name);
     }
 
-    public long save(Dish dish) {
-        return ((Dish)dishesRepository.saveAndFlush(dish)).getId();
+    public long save(DishDTO dish) throws DataIntegrityViolationException {
+        //if (dishesRepository.findByName(dish.getName()).isPresent()) 
+        try {
+            Dish insertedDish = (Dish)dishesRepository.saveAndFlush(new Dish(dish));
+            return insertedDish.getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(
+                        String.format("The dish with the name=\"%s\" already exists", dish.getName())
+            );
+        }
     }
 
-    public long saveNotActual(String name, int type, String description) {
-        return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description, false))).getId();
-    }
+    // public long saveNotActual(String name, int type, String description) {
+    //     return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description, false))).getId();
+    // }
 
-    public long saveActual(String name, int type, String description) {
-        return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description))).getId();
-    }
+    // public long saveActual(String name, int type, String description) {
+    //     return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description))).getId();
+    // }
 
     public void update(long id, String name, int type, String description, boolean isActual) throws EntityNotFoundException{
         this.update(new Dish(name, type, description,isActual));
@@ -55,13 +69,4 @@ public class DishesService {
         dishesRepository.flush();
     }
 
-    public void deleteByName(String name) {
-        Optional<Dish> dish= dishesRepository.findByName(name);
-        if (dish.isPresent()) {
-            dishesRepository.delete(dish.get());
-            dishesRepository.flush();
-        } else {
-            throw new EntityNotFoundException(String.format("Dish with name=%s not found", name));
-        }
-    }
 }
