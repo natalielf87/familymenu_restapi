@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.petprojec.familymenu_restapi.dto.DishDTO;
+import org.petprojec.familymenu_restapi.dto.DishesDTOUpdate;
+import org.petprojec.familymenu_restapi.dto.SingleFieldRecord;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,8 +18,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,6 +69,22 @@ public class DishesController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<DishDTO> update(@PathVariable long id, @RequestBody @Valid DishDTO dishDTO) {
+        return ResponseEntity.ok(dishesService.update(id, dishDTO.getName(), dishDTO.getType(), dishDTO.getDescription(), dishDTO.getIsActual()).getDishDTO());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<DishDTO> patch(@PathVariable long id, @RequestBody @Valid DishesDTOUpdate dishDTO) {
+        return ResponseEntity.ok(dishesService.patch(id, 
+                                                            Optional.ofNullable(dishDTO.getName()), 
+                                                            Optional.ofNullable(dishDTO.getType()), 
+                                                            Optional.ofNullable(dishDTO.getDescription()), 
+                                                            Optional.ofNullable(dishDTO.getIsActual())
+                                                            ).getDishDTO()
+                                        );
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> processDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
@@ -90,5 +110,12 @@ public class DishesController {
         dishesService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping
+    public ResponseEntity<Object> deleteByName(@RequestBody SingleFieldRecord requestBody) {
+        dishesService.deleteByName(requestBody.name());
+        return ResponseEntity.noContent().build();
+    }
+    
 
 }

@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 //@ComponentScan(basePackages = {"org.petprojec.familymenu_restapi.repositories"})
@@ -32,6 +33,7 @@ public class DishesService {
         return dishesRepository.findByNameStartingWith(name);
     }
 
+    @Transactional
     public long save(DishDTO dish) throws DataIntegrityViolationException {
         //if (dishesRepository.findByName(dish.getName()).isPresent()) 
         try {
@@ -44,29 +46,52 @@ public class DishesService {
         }
     }
 
-    // public long saveNotActual(String name, int type, String description) {
-    //     return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description, false))).getId();
-    // }
-
-    // public long saveActual(String name, int type, String description) {
-    //     return ((Dish)dishesRepository.saveAndFlush(new Dish(name, type, description))).getId();
-    // }
-
-    public void update(long id, String name, int type, String description, boolean isActual) throws EntityNotFoundException{
-        this.update(new Dish(name, type, description,isActual));
+    @Transactional
+    public Dish update(long id, String name, int type, String description, boolean isActual) {
+        Optional<Dish> dishOpt = dishesRepository.findById(id);
+        if (dishOpt.isPresent()) {
+            Dish dish = dishOpt.get();
+            dish.setName(name);
+            dish.setType(type);
+            dish.setDescription(description);
+            dish.setActual(isActual);
+            return dishesRepository.saveAndFlush(dish);
+        } else {
+            throw new EntityNotFoundException(String.format("Dish item with id=%d does not exist", id));
+        }
     }
 
-    public void update(Dish dish) {
-        if (dishesRepository.existsById(dish.getId())) {
-            dishesRepository.saveAndFlush(dish);
+    @Transactional
+    public Dish patch(long id, Optional<String> name, Optional<Integer> type, Optional<String> description, Optional<Boolean> isActual) {
+        Optional<Dish> dishOpt = dishesRepository.findById(id);
+        if (dishOpt.isPresent()) {
+            Dish dish = dishOpt.get();
+            if (name.isPresent()) {
+                dish.setName(name.get());
+            }
+            if (type.isPresent()) {
+                dish.setType(type.get());
+            }
+            if (description.isPresent()) {
+                dish.setDescription(description.get());
+            }
+            if (isActual.isPresent()) {
+                dish.setActual(isActual.get());
+           }
+           return dishesRepository.saveAndFlush(dish);
         } else {
-            throw new EntityNotFoundException(String.format("Dish item with id=%d does not exist", dish.getId()));
+            throw new EntityNotFoundException(String.format("Dish item with id=%d does not exist", id));
         }
-    } 
+    }
 
+    @Transactional
     public void deleteById(long id) {
         dishesRepository.deleteById(id);
-        dishesRepository.flush();
+    }
+
+    @Transactional
+    public void deleteByName(String name) {
+        dishesRepository.deleteByName(name);
     }
 
 }

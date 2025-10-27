@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -79,6 +80,11 @@ public class Dish {
 
     public DishDTO getDishDTO() {
         return new DishDTO(this.name, this.type, this.description, this.isActual);
+    }
+
+    @PreUpdate
+    private void updateTimestamp() {
+        this.setUpdatedAt(ZonedDateTime.now());
     }
 
 
