@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import org.petprojec.familymenu_restapi.dto.DishDTO;
 import org.petprojec.familymenu_restapi.model.Dish;
-import org.petprojec.familymenu_restapi.repositories.DishesRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import org.petprojec.familymenu_restapi.repositories.DishesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
