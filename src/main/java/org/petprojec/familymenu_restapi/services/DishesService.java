@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
-//@ComponentScan(basePackages = {"org.petprojec.familymenu_restapi.repositories"})
 public class DishesService {
     private final DishesRepository dishesRepository;
 
@@ -55,7 +54,14 @@ public class DishesService {
             dish.setType(type);
             dish.setDescription(description);
             dish.setActual(isActual);
-            return dishesRepository.saveAndFlush(dish);
+            try {
+                return dishesRepository.saveAndFlush(dish);
+            }
+            catch (DataIntegrityViolationException e) {
+               throw new DataIntegrityViolationException(
+                        String.format("The dish with the name=\"%s\" already exists", name)
+                ); 
+            }
         } else {
             throw new EntityNotFoundException(String.format("Dish item with id=%d does not exist", id));
         }
@@ -78,7 +84,14 @@ public class DishesService {
             if (isActual.isPresent()) {
                 dish.setActual(isActual.get());
            }
-           return dishesRepository.saveAndFlush(dish);
+            try {
+                return dishesRepository.saveAndFlush(dish);
+            }
+            catch (DataIntegrityViolationException e) {
+               throw new DataIntegrityViolationException(
+                        String.format("The dish with the name=\"%s\" already exists", name.get())
+                ); 
+            }
         } else {
             throw new EntityNotFoundException(String.format("Dish item with id=%d does not exist", id));
         }

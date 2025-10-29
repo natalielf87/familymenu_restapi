@@ -46,7 +46,7 @@ public class Dish {
     private String description;
 
     @Column(name="created_at")
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private final ZonedDateTime createdAt = ZonedDateTime.now();
     
     @Column(name="updated_at")
     private ZonedDateTime updatedAt;
@@ -86,6 +86,7 @@ public class Dish {
     private void updateTimestamp() {
         this.setUpdatedAt(ZonedDateTime.now());
     }
+
 
 
 }
