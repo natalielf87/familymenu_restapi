@@ -11,7 +11,6 @@ import org.petprojec.familymenu_restapi.dto.DishesDTOUpdate;
 import org.petprojec.familymenu_restapi.dto.SingleFieldRecord;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,7 +30,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/dishes")
-@ComponentScan(basePackages = {"org.petprojec.familymenu_restapi.services"})
 public class DishesController {
     private final DishesService dishesService;
 
