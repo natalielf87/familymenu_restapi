@@ -90,9 +90,4 @@ DELETE http://localhost:8090/api/v1/dishes/25
 
 ### DELETE by name
 
-DELETE http://localhost:8090/api/v1/dishes
-Content-Type: application/json
-
-{
-    "name": "Soup with fish"
-}
+DELETE http://localhost:8090/api/v1/dishes?name=Soup%20with%20fish

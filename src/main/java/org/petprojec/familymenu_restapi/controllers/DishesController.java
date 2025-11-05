@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 import org.petprojec.familymenu_restapi.dto.DishDTO;
 import org.petprojec.familymenu_restapi.dto.DishesDTOUpdate;
-import org.petprojec.familymenu_restapi.dto.SingleFieldRecord;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -54,6 +55,7 @@ public class DishesController {
     @GetMapping
     public ResponseEntity<List<DishDTO>> findByNameStartingWith(@RequestParam(name="name", required =true) String name) {
         List<Dish> dishList = dishesService.findByNameStartingWith(name);
+        if (dishList.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishList.stream().map(Dish::getDishDTO).collect(Collectors.toList()));
     }
 
@@ -61,7 +63,7 @@ public class DishesController {
     public ResponseEntity<Long> save(@RequestBody @Valid DishDTO dish) {
         long id = dishesService.save(dish);
         try {
-            return ResponseEntity.created(new URI(String.format("http://localhost:8090/api/v1/dishes/%d",id))).build();    
+            return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).build();    
         } catch (URISyntaxException e) {
             return ResponseEntity.ok(id);
         }
@@ -84,8 +86,10 @@ public class DishesController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> processDataIntegrityViolationException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> processDataIntegrityViolationException(Exception e) {
+        return new ResponseEntity<String>(
+                    e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -103,6 +107,11 @@ public class DishesController {
         return ResponseEntity.badRequest().body(message);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> processEntityNotFoundException(EntityNotFoundException e) {
+        return new ResponseEntity<> (e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable long id) {
         dishesService.deleteById(id);
@@ -110,8 +119,8 @@ public class DishesController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteByName(@RequestBody SingleFieldRecord requestBody) {
-        dishesService.deleteByName(requestBody.name());
+    public ResponseEntity<Object> deleteByName(@RequestParam(name="name", required =true) String name) {
+        dishesService.deleteByName(name);
         return ResponseEntity.noContent().build();
     }
     
