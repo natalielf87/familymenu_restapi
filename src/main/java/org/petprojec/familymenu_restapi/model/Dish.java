@@ -58,6 +58,9 @@ public class Dish {
     @JoinTable(name="dishesingredients", joinColumns = @JoinColumn(name="id"), inverseJoinColumns=@JoinColumn(name="ingredient_id"))
     private List<Ingredient> Ingredients;
 
+    @OneToMany(mappedBy="dish", cascade=CascadeType.ALL)
+    private List<DishesTracking> dishesTrackings;
+
     public Dish() { }
 
     public Dish(String name, int type, String description, boolean isActual) {
@@ -75,11 +78,8 @@ public class Dish {
         this(dto.getName(), dto.getType(), dto.getDescription(), dto.getIsActual());
     }
 
-    @OneToMany(mappedBy="dish", cascade=CascadeType.ALL)
-    private List<DishesTracking> dishesTrackings;
-
     public DishDTO getDishDTO() {
-        return new DishDTO(this.name, this.type, this.description, this.isActual);
+        return new DishDTO(this.getName(), this.getType(), this.getDescription(), this.isActual());
     }
 
     @PreUpdate

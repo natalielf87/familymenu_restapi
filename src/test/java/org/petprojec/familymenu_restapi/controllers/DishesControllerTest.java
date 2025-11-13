@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.petprojec.familymenu_restapi.dto.DishDTO;
+import org.petprojec.familymenu_restapi.dto.patch.DishPatchDTO;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -72,6 +75,11 @@ public class DishesControllerTest {
 
 
     private static ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeAll
+    public static void initBeforeAll() {
+        objectMapper.registerModule(new Jdk8Module());
+    }
 
     @BeforeEach
     public void init(){
@@ -170,7 +178,8 @@ public class DishesControllerTest {
         this.mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDishDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(header().stringValues("Location", expectedLocation));
+                .andExpect(header().stringValues("Location", expectedLocation))
+                .andExpect(content().string(String.valueOf(expectedID)));
         
         verify(dishesService, times(1)).save(any(DishDTO.class));
         
@@ -267,9 +276,9 @@ public class DishesControllerTest {
         Dish expectedDish = new Dish(DISH1_NAME, newType, DISH1_DESCRIPTION, newIsActual);
         expectedDish.setId(ID1);
 
-        DishDTO patchDishDTO = new DishDTO();
-        patchDishDTO.setType(newType);
-        patchDishDTO.setIsActual(newIsActual);
+        DishPatchDTO patchDishDTO = new DishPatchDTO();
+        patchDishDTO.setType(Optional.of(newType));
+        patchDishDTO.setIsActual(Optional.of(newIsActual));
 
         when(
                 dishesService.patch(

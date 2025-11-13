@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.petprojec.familymenu_restapi.dto.DishDTO;
-import org.petprojec.familymenu_restapi.dto.DishesDTOUpdate;
+import org.petprojec.familymenu_restapi.dto.patch.DishPatchDTO;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,7 +63,7 @@ public class DishesController {
     public ResponseEntity<Long> save(@RequestBody @Valid DishDTO dish) {
         long id = dishesService.save(dish);
         try {
-            return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).build();    
+            return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).body(Long.valueOf(id));    
         } catch (URISyntaxException e) {
             return ResponseEntity.ok(id);
         }
@@ -75,12 +75,12 @@ public class DishesController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DishDTO> patch(@PathVariable long id, @RequestBody @Valid DishesDTOUpdate dishDTO) {
+    public ResponseEntity<DishDTO> patch(@PathVariable long id, @RequestBody @Valid DishPatchDTO dishDTO) {
         return ResponseEntity.ok(dishesService.patch(id, 
-                                                            Optional.ofNullable(dishDTO.getName()), 
-                                                            Optional.ofNullable(dishDTO.getType()), 
-                                                            Optional.ofNullable(dishDTO.getDescription()), 
-                                                            Optional.ofNullable(dishDTO.getIsActual())
+                                                            dishDTO.getName(), 
+                                                            dishDTO.getType(), 
+                                                            dishDTO.getDescription(), 
+                                                            dishDTO.getIsActual()
                                                             ).getDishDTO()
                                         );
     }
