@@ -58,7 +58,7 @@ public class Dish {
     @JoinTable(name="dishesingredients", joinColumns = @JoinColumn(name="id"), inverseJoinColumns=@JoinColumn(name="ingredient_id"))
     private List<Ingredient> Ingredients;
 
-    @OneToMany(mappedBy="dish", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="dish", cascade=CascadeType.REMOVE)
     private List<DishesTracking> dishesTrackings;
 
     public Dish() { }
