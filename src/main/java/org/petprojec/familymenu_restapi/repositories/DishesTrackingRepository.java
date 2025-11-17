@@ -13,5 +13,5 @@ import org.springframework.stereotype.Repository;
 public interface DishesTrackingRepository extends JpaRepository<DishesTracking, Long>{
     public Optional<DishesTracking> findByKeyDishIdAndKeyDateFrom(long dishId, LocalDate dateFrom) ;
     public List<DishesTracking> findByKeyDishId(long dishId);
-    public void deleteByKeyDishIdAndKeyDateFrom(long dishId, ZonedDateTime dateFrom);
+    public void deleteByKeyDishIdAndKeyDateFrom(long dishId, LocalDate dateFrom);
 }
