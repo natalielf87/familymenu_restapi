@@ -113,7 +113,7 @@ public class DishesTrackingRepositoryTest {
     @Transactional
     private void updateDishesTrackingInDb(long dishId, LocalDate dateFrom) {
         DishesTracking trackToUpdate = dishesTrackingRepository.findByKeyDishIdAndKeyDateFrom(dishId, dateFrom).orElseThrow();
-        trackToUpdate.setDateTo(DISH_TRACK1_DATE_TO);;
+        trackToUpdate.setDateTo(DISH_TRACK1_DATE_TO);
         trackToUpdate.setNotes(DISH_TRACK1_NOTES);
 
         dishesTrackingRepository.saveAndFlush(trackToUpdate);

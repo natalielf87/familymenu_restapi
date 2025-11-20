@@ -10,6 +10,8 @@ import org.petprojec.familymenu_restapi.dto.DishDTO;
 import org.petprojec.familymenu_restapi.dto.patch.DishPatchDTO;
 import org.petprojec.familymenu_restapi.model.Dish;
 import org.petprojec.familymenu_restapi.services.DishesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/dishes")
 public class DishesController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DishesController.class);
     private final DishesService dishesService;
 
     public DishesController(DishesService dishesService) {
@@ -40,13 +43,16 @@ public class DishesController {
 
     @GetMapping("/all")
     public ResponseEntity<List<DishDTO>> findAll() {
+        LOGGER.info("findAll() started");
         List<Dish> dishList = dishesService.findAll();
+        LOGGER.info("findAll() completed");
         if (dishList.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishList.stream().map(Dish::getDishDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DishDTO> findById(@PathVariable long id) {
+        LOGGER.info(String.format("findById() started for id=%d",id));
         Optional<Dish> dishOpt = dishesService.findById(id);
         if (dishOpt.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishOpt.get().getDishDTO());
@@ -54,6 +60,7 @@ public class DishesController {
 
     @GetMapping
     public ResponseEntity<List<DishDTO>> findByNameStartingWith(@RequestParam(name="name", required =true) String name) {
+        LOGGER.info(String.format("findByNameStartingWith() started for name=%s",name));
         List<Dish> dishList = dishesService.findByNameStartingWith(name);
         if (dishList.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishList.stream().map(Dish::getDishDTO).collect(Collectors.toList()));
@@ -61,21 +68,26 @@ public class DishesController {
 
     @PostMapping
     public ResponseEntity<Long> save(@RequestBody @Valid DishDTO dish) {
+        LOGGER.info(String.format("save() started for dishDTO={%s}",dish));
         long id = dishesService.save(dish);
         try {
-            return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).body(Long.valueOf(id));    
+            return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).body(id);    
         } catch (URISyntaxException e) {
+            LOGGER.error(String.format("save() problem occured while creating URI: %s", e.getMessage()));
             return ResponseEntity.ok(id);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DishDTO> update(@PathVariable long id, @RequestBody @Valid DishDTO dishDTO) {
-        return ResponseEntity.ok(dishesService.update(id, dishDTO.getName(), dishDTO.getType(), dishDTO.getDescription(), dishDTO.getIsActual()).getDishDTO());
+        LOGGER.info(String.format("update() started for id=%d and dishDTO={%s}",id,dishDTO));
+        Dish savedDish = dishesService.update(id, dishDTO.getName(), dishDTO.getType(), dishDTO.getDescription(), dishDTO.getIsActual());
+        return ResponseEntity.ok(savedDish.getDishDTO());
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DishDTO> patch(@PathVariable long id, @RequestBody @Valid DishPatchDTO dishDTO) {
+        LOGGER.info(String.format("patch() started for id=%d and dishPatchDTO={%s}",id,dishDTO));
         return ResponseEntity.ok(dishesService.patch(id, 
                                                             dishDTO.getName(), 
                                                             dishDTO.getType(), 
@@ -87,7 +99,7 @@ public class DishesController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> processDataIntegrityViolationException(Exception e) {
-        return new ResponseEntity<String>(
+        return new ResponseEntity<>(
                     e.getMessage(),
                     HttpStatus.BAD_REQUEST);
     }
@@ -114,13 +126,17 @@ public class DishesController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable long id) {
+        LOGGER.info(String.format("deleteById() started for id=%d",id));
         dishesService.deleteById(id);
+        LOGGER.info(String.format("deleteById() completed for id=%d",id));
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
     public ResponseEntity<Object> deleteByName(@RequestParam(name="name", required =true) String name) {
+        LOGGER.info(String.format("deleteByName() started for name=%s",name));
         dishesService.deleteByName(name);
+        LOGGER.info(String.format("deleteByName() completed for name=%s",name));
         return ResponseEntity.noContent().build();
     }
     
