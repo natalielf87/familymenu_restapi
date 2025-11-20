@@ -63,7 +63,7 @@ public class DishesTrackingService {
     }
 
     @Transactional
-    public void deleteByDishIdAndDateFrom(long dishId, ZonedDateTime dateFrom) {
+    public void deleteByDishIdAndDateFrom(long dishId, LocalDate dateFrom) {
         dishesTrackingRepository.deleteByKeyDishIdAndKeyDateFrom(dishId, dateFrom);
     }
 }
