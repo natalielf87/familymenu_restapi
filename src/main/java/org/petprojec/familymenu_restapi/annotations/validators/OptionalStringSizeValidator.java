@@ -22,6 +22,10 @@ public class OptionalStringSizeValidator  implements ConstraintValidator<Optiona
     public boolean isValid(Optional<String> optionalString, 
                            ConstraintValidatorContext context) {
         
+        if (optionalString == null) {
+            return true;
+        }
+        
         if (optionalString.isEmpty()) {
             return true;
         }

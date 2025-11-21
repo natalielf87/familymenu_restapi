@@ -14,14 +14,14 @@ import lombok.ToString;
 @NoArgsConstructor
 public class DishPatchDTO {
     @OptionalStringSize(max=100)
-    private Optional<String> name;
+    private Optional<String> name = Optional.empty();
 
     @OptionalIntegerConstraint(min=0, max=3)
-    private Optional<Integer> type;
+    private Optional<Integer> type = Optional.empty();
 
     @OptionalStringSize(max=500)
-    private Optional<String> description;
+    private Optional<String> description = Optional.empty();
 
-    private Optional<Boolean> isActual;
+    private Optional<Boolean> isActual = Optional.empty();
 
 }

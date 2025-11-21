@@ -19,7 +19,11 @@ public class OptionalIntegerConstraintValidator implements ConstraintValidator<O
 
     @Override
     public boolean isValid(Optional<Integer> value, ConstraintValidatorContext context) {
-       if (value.isEmpty()) {
+       if (value == null) {
+        return true;
+       }
+       
+        if (value.isEmpty()) {
         return true;
        }
 

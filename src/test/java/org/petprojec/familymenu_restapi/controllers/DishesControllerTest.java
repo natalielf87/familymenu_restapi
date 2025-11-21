@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -27,12 +26,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
-import jakarta.persistence.EntityNotFoundException;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -43,6 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @WebMvcTest(controllers = DishesController.class)
 public class DishesControllerTest {
@@ -62,7 +60,6 @@ public class DishesControllerTest {
     private DishDTO testDishDTO2;
 
     static final long ID1 = 1L;
-    static final long ID2 = 2L;
 
     private static final String DISH1_NAME = "Meatballs";
     private static final String DISH1_DESCRIPTION = ":-)";
@@ -74,7 +71,7 @@ public class DishesControllerTest {
     private static final boolean DISH2_ISACTUAL = false;
 
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeAll
     public static void initBeforeAll() {

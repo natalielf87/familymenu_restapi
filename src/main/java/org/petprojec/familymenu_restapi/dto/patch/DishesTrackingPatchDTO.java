@@ -15,9 +15,9 @@ import lombok.ToString;
 @ToString
 public class DishesTrackingPatchDTO {
     @OptionalStringSize(max=500)
-    private Optional<String> notes;
+    private Optional<String> notes = Optional.empty();
     
-    private Optional<LocalDate> dateTo;
+    private Optional<LocalDate> dateTo = Optional.empty();
 
-    private Optional<Boolean> isActual;
+    private Optional<Boolean> isActual = Optional.empty();
 }
