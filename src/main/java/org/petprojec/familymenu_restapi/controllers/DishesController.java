@@ -52,7 +52,7 @@ public class DishesController {
 
     @GetMapping("/{id}")
     public ResponseEntity<DishDTO> findById(@PathVariable long id) {
-        LOGGER.info(String.format("findById() started for id=%d",id));
+        LOGGER.info("findById() started for id={}",id);
         Optional<Dish> dishOpt = dishesService.findById(id);
         if (dishOpt.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishOpt.get().getDishDTO());
@@ -60,7 +60,7 @@ public class DishesController {
 
     @GetMapping
     public ResponseEntity<List<DishDTO>> findByNameStartingWith(@RequestParam(name="name", required =true) String name) {
-        LOGGER.info(String.format("findByNameStartingWith() started for name=%s",name));
+        LOGGER.info("findByNameStartingWith() started for name={}",name);
         List<Dish> dishList = dishesService.findByNameStartingWith(name);
         if (dishList.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(dishList.stream().map(Dish::getDishDTO).collect(Collectors.toList()));
@@ -68,26 +68,26 @@ public class DishesController {
 
     @PostMapping
     public ResponseEntity<Long> save(@RequestBody @Valid DishDTO dish) {
-        LOGGER.info(String.format("save() started for dishDTO={%s}",dish));
+        LOGGER.info("save() started for dishDTO={{}}",dish);
         long id = dishesService.save(dish);
         try {
             return ResponseEntity.created(new URI(String.format("/api/v1/dishes/%d",id))).body(id);    
         } catch (URISyntaxException e) {
-            LOGGER.error(String.format("save() problem occured while creating URI: %s", e.getMessage()));
+            LOGGER.error("save() problem occured while creating URI: {}", e.getMessage());
             return ResponseEntity.ok(id);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<DishDTO> update(@PathVariable long id, @RequestBody @Valid DishDTO dishDTO) {
-        LOGGER.info(String.format("update() started for id=%d and dishDTO={%s}",id,dishDTO));
+        LOGGER.info("update() started for id=%d and dishDTO={{}}",id,dishDTO);
         Dish savedDish = dishesService.update(id, dishDTO.getName(), dishDTO.getType(), dishDTO.getDescription(), dishDTO.getIsActual());
         return ResponseEntity.ok(savedDish.getDishDTO());
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DishDTO> patch(@PathVariable long id, @RequestBody @Valid DishPatchDTO dishDTO) {
-        LOGGER.info(String.format("patch() started for id=%d and dishPatchDTO={%s}",id,dishDTO));
+        LOGGER.info("patch() started for id={} and dishPatchDTO={{}}",id,dishDTO);
         return ResponseEntity.ok(dishesService.patch(id, 
                                                             dishDTO.getName(), 
                                                             dishDTO.getType(), 
@@ -126,17 +126,17 @@ public class DishesController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteById(@PathVariable long id) {
-        LOGGER.info(String.format("deleteById() started for id=%d",id));
+        LOGGER.info("deleteById() started for id=%d",id);
         dishesService.deleteById(id);
-        LOGGER.info(String.format("deleteById() completed for id=%d",id));
+        LOGGER.info("deleteById() completed for id=%d",id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
     public ResponseEntity<Object> deleteByName(@RequestParam(name="name", required =true) String name) {
-        LOGGER.info(String.format("deleteByName() started for name=%s",name));
+        LOGGER.info("deleteByName() started for name=%s",name);
         dishesService.deleteByName(name);
-        LOGGER.info(String.format("deleteByName() completed for name=%s",name));
+        LOGGER.info("deleteByName() completed for name=%s",name);
         return ResponseEntity.noContent().build();
     }
     

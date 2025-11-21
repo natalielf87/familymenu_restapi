@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.DeleteExchange;
 
 import jakarta.validation.Valid;
 
@@ -40,7 +39,7 @@ public class DishesTrackingController {
     @GetMapping
     public ResponseEntity<DishesTrackingDTO> findDishesTrackingDTOByDishIdAndDateFrom(@RequestParam(name="dishId", required =true) long dishId, 
                                                                     @RequestParam(name="fromDate", required=true) LocalDate fromDate) {
-        LOGGER.info(String.format("findDishesTrackingDTOByDishIdAndDateFrom() started with params dishId=%d fromDate=%s", dishId,fromDate));                                            
+        LOGGER.info("findDishesTrackingDTOByDishIdAndDateFrom() started with params dishId={} fromDate={}", dishId,fromDate);                                            
         Optional<DishesTracking> trackOpt = dishesTrackingService.findByDishIdAndDateFrom(dishId, fromDate);
         if (trackOpt.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(trackOpt.get().getDishesTrackingDTO());
@@ -48,7 +47,7 @@ public class DishesTrackingController {
 
     @GetMapping("{dishId}")
     public ResponseEntity<List<DishesTrackingDTO>> findDishesTrackingByDishId(@PathVariable long dishId) {
-        LOGGER.info(String.format("findDishesTrackingByDishId() started with params dishId=%d", dishId));
+        LOGGER.info("findDishesTrackingByDishId() started with params dishId={}", dishId);
         List<DishesTracking> trackList = dishesTrackingService.findByDishId(dishId);
         if (trackList.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(trackList.stream().map(item->item.getDishesTrackingDTO()).collect(Collectors.toList()));
@@ -56,7 +55,7 @@ public class DishesTrackingController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody @Valid DishesTrackingDTO trackDTO) {
-        LOGGER.info(String.format("save() started with params dishesTrackingDTO=%d", trackDTO));
+        LOGGER.info("save() started with params dishesTrackingDTO={{}}", trackDTO);
         dishesTrackingService.save(trackDTO);
         try {
             return ResponseEntity.created(
@@ -74,7 +73,7 @@ public class DishesTrackingController {
     public ResponseEntity<DishesTrackingDTO> patch(@RequestParam(name="dishId", required =true) long dishId, 
                                         @RequestParam(name="fromDate", required=true) LocalDate fromDate, 
                                         @RequestBody @Valid DishesTrackingPatchDTO trackPatchDTO) {
-        LOGGER.info(String.format("patch() started with params dishId=%d, fromDate=%s, dishesTrackingDTO=%d", dishId, fromDate, trackPatchDTO));
+        LOGGER.info("patch() started with params dishId={}, fromDate={}, dishesTrackingDTO={{}}", dishId, fromDate, trackPatchDTO);
         return ResponseEntity.ok(dishesTrackingService
                                     .patch( dishId, 
                                             fromDate, 
@@ -89,9 +88,9 @@ public class DishesTrackingController {
     @DeleteMapping
     public ResponseEntity<Object> deleteByDishIdAndDateFrom(@RequestParam(name="dishId", required =true) long dishId, 
                                         @RequestParam(name="fromDate", required=true) LocalDate fromDate) {
-        LOGGER.info(String.format("deleteByDishIdAndDateFrom() started for dishId=%d, fromDate=%s",dishId, fromDate));
+        LOGGER.info("deleteByDishIdAndDateFrom() started for dishId={}, fromDate={}",dishId, fromDate);
         dishesTrackingService.deleteByDishIdAndDateFrom(dishId, fromDate);
-        LOGGER.info(String.format("deleteByDishIdAndDateFrom() completed for dishId=%d, fromDate=%s",dishId, fromDate));
+        LOGGER.info("deleteByDishIdAndDateFrom() completed for dishId={}, fromDate={}",dishId, fromDate);
         return ResponseEntity.noContent().build();
     }
     

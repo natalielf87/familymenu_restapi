@@ -25,27 +25,27 @@ public class DishesTrackingService {
     }
 
     public Optional<DishesTracking> findByDishIdAndDateFrom(long dishId, LocalDate dateFrom) {
-        LOGGER.debug(String.format("findByDishIdAndDateFrom() started with params dishId=%d, dateFrom=%s", dishId, dateFrom));
+        LOGGER.debug("findByDishIdAndDateFrom() started with params dishId={}, dateFrom={}", dishId, dateFrom);
         Optional<DishesTracking> dishTrack = dishesTrackingRepository.findByKeyDishIdAndKeyDateFrom(dishId, dateFrom);
-        LOGGER.info(String.format("findByDishIdAndDateFrom() tracking with dishId=%d, dateFrom=%s", dishId, dateFrom) + (dishTrack.isPresent() ? " found": " not found"));
+        LOGGER.info("findByDishIdAndDateFrom() tracking with dishId={}, dateFrom={}" + (dishTrack.isPresent() ? " found": " not found"), dishId, dateFrom);
         return dishTrack;
     }
 
     public List<DishesTracking> findByDishId(long dishId) {
-        LOGGER.debug(String.format("findByDishId() started with params dishId=%d", dishId));
+        LOGGER.debug("findByDishId() started with params dishId={}", dishId);
         List<DishesTracking> trackList = dishesTrackingRepository.findByKeyDishId(dishId);
-        LOGGER.info(String.format("findByDishId() trackings with dishId=%d", dishId) + (trackList.isEmpty() ? " not found": " found"));
+        LOGGER.info("findByDishId() trackings with dishId={}" + (trackList.isEmpty() ? " not found": " found"), dishId);
         return trackList;
     }
 
     @Transactional
     public void save(DishesTrackingDTO dishTracking) throws DataIntegrityViolationException {
-         LOGGER.debug(String.format("save() started with params trackDTO=%s", dishTracking));
+         LOGGER.debug("save() started with params trackDTO={}", dishTracking);
         try {
             dishesTrackingRepository.saveAndFlush(new DishesTracking(dishTracking));
-            LOGGER.info(String.format("save() data are added to data storage"));
+            LOGGER.info("save() data are added to data storage");
         } catch (DataIntegrityViolationException e) {
-            LOGGER.error(String.format("save() data are not saved in data storage: %s", e.getMessage()));
+            LOGGER.error("save() data are not saved in data storage: {}", e.getMessage());
             throw new DataIntegrityViolationException(
                         String.format("The dish tracking with the id=\"%d\" and date_from=\"%s\" already exists", dishTracking.getDishId(), dishTracking.getDateFrom())
             );
@@ -54,7 +54,7 @@ public class DishesTrackingService {
 
     @Transactional
     public DishesTracking patch(long dishId, LocalDate dateFrom, Optional<LocalDate> dateTo, Optional<String> notes, Optional<Boolean> isActual) {
-        LOGGER.debug(String.format("patch() started with dishId=%d, dateFrom=%s, dateTo=%s, notes=\"%s\", isActual=%b", dishId, dateFrom, dateTo, notes, isActual));
+        LOGGER.debug("patch() started with dishId={}, dateFrom={}, dateTo={}, notes=\"{}\", isActual={}", dishId, dateFrom, dateTo, notes, isActual);
         Optional<DishesTracking> trackOpt = dishesTrackingRepository.findByKeyDishIdAndKeyDateFrom(dishId,dateFrom);
         if (trackOpt.isPresent()) {
             DishesTracking track = trackOpt.get();
@@ -69,15 +69,15 @@ public class DishesTrackingService {
            }
            try {
                 DishesTracking dishTrack = dishesTrackingRepository.saveAndFlush(track);
-                LOGGER.info(String.format("patch() data are saved in data storage"));
+                LOGGER.info("patch() data are saved in data storage");
                 return dishTrack;
            }
             catch (Exception e) {
-                LOGGER.error(String.format("save() data are not saved in data storage: %s", e.getMessage()));
+                LOGGER.error("save() data are not saved in data storage: {}", e.getMessage());
                 throw e;
             }
         } else {
-            LOGGER.error(String.format("patch() data are not saved in data storage: Dish tracking item with dishId=%d and dateFrom=%s not found",dishId,dateFrom));
+            LOGGER.error("patch() data are not saved in data storage: Dish tracking item with dishId={} and dateFrom={} not found",dishId,dateFrom);
             throw new EntityNotFoundException(String.format("Dish tracking item with dishId=%d and dateFrom=%s does not exist", dishId, dateFrom));
         }
     }
